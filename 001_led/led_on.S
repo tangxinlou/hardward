@@ -11,7 +11,7 @@
  * 点亮LED1: gpf4
  */
     ldr r1, =0x56000050
-    ldr r0, =0x100 /* mov r0, #0x100 */
+    ldr r0, =0x400 /* mov r0, #0x100 */
     str r0, [r1]
     
     ldr r1, =0x56000054
