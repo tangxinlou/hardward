@@ -1,4 +1,5 @@
 
+#include "s3c2440_soc.h"
 
 void delay(volatile int d)
 {
@@ -7,8 +8,6 @@ void delay(volatile int d)
 
 int main()
 {
-    unsigned int *pGPFCON = (unsigned int *)0x56000050; //无符号int 型指针
-	unsigned int *pGPFDAT = (unsigned int *)0x56000054; 
     int val = 0;  /* val: 0b000, 0b111 */
     /*
      * 000 取反 0b111 全不亮
@@ -22,8 +21,8 @@ int main()
 	int tmp;
 
 	/* 设置GPFCON让GPF4/5/6配置为输出引脚 */
-	*pGPFCON &= ~((3<<8) | (3<<10) | (3<<12)); //清除配置寄存器456 的设置
-	*pGPFCON |=  ((1<<8) | (1<<10) | (1<<12)); //设置配置寄存器456 为输出 
+	pGPFCON &= ~((3<<8) | (3<<10) | (3<<12)); //清除配置寄存器456 的设置
+	pGPFCON |=  ((1<<8) | (1<<10) | (1<<12)); //设置配置寄存器456 为输出 
 
 	/* 循环点亮 */
 	while (1)
