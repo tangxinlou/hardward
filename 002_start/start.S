@@ -10,7 +10,13 @@
     ldr sp, =4096   //nand 启动 栈由上往下生长,设置4k的栈
  // ldr sp, =0x40000000+4096 //nor的寻址地址在0x40000000开始，同样设置4k栈
     
-    bl main //有返回值的跳转 
+ 	mov r0, #4
+	bl led_on
 
+	ldr r0, =100000
+	bl delay
+
+	mov r0, #5
+	bl led_on 
 halt:
     b halt //死循环
