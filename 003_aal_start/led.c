@@ -5,7 +5,7 @@ void delay(volatile int d)
 	while (d--);
 }
 
-int main(void)
+int led_test(void)
 {
 	int val = 0;  /* val: 0b000, 0b111 */
 	int tmp;
