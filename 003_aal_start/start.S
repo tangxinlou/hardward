@@ -58,6 +58,12 @@ _start:
 	streq r0, [r1]   /* 恢复原来的值 */
 	
 
+    bl sdram_init
+
+    mov r1, #0x800
+    ldr r0, [r1]
+    mov r1, #0x30000000
+    str r0, [r1]
 	bl main
 
 halt:
