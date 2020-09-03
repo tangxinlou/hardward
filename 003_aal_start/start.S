@@ -60,10 +60,17 @@ _start:
 
     bl sdram_init
 
-    mov r1, #0x800
-    ldr r0, [r1]
-    mov r1, #0x30000000
-    str r0, [r1]
+	ldr r1, =data_load_addr  /* data段在bin文件中的地址, 加载地址 */
+	ldr r2, =data_start 	 /* data段在重定位地址, 运行时的地址 */
+	ldr r3, =data_end 	     /* data段结束地址 */
+
+cpy:
+	ldrb r4, [r1]
+	strb r4, [r2]
+	add r1, r1, #1
+	add r2, r2, #1
+	cmp r2, r3
+	bne cpy 
 	bl main
 
 halt:
