@@ -1,7 +1,7 @@
 SECTIONS
 {
 	. = 0x30000000;
-
+     __code_start = .;
 	. = ALIGN(4);
 	.text      :
 	{

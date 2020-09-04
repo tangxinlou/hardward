@@ -39,19 +39,24 @@ int sdram_test(void)
     return 0;
 }
 
-void copy2sdram(volatile unsigned int *src, volatile unsigned int *dest, unsigned int led)
+void copy2sdram(void)
 {
-    unsigned int i = 0;
+    extern int __code_start, __bss_start;
+    volatile unsigned int *dest = (volatile unsigned int *) &__code_start;
+    volatile unsigned int *end = (volatile unsigned int *) &__bss_start;
+    volatile unsigned int *src = 0;
 
-    while(i < len)
+    while(src)
     {
         *dest++ = *src;
-        i += 4;
     }
 }
 
-void clean_bss(volatile unsigned int *start, volatile unsigned int *end )
-{
+void clean_bss()
+{            
+    extern int _end, __bss_start;
+    volatile unsigned int *start = (volatile unsigned int *)&__bss_start;
+    volatile unsigned int *end = (volatile unsigned int *)&_end; 
     while(start < end)
     {
         *start++ = 0;
