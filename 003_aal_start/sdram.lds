@@ -9,5 +9,7 @@
        data_end = . ;
 
    }
+   bss_start = .;
    .bss  : { *(.bss) *(.COMMON) }
+   bss_end = .;
 }

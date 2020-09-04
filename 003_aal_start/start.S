@@ -71,6 +71,17 @@ cpy:
 	add r2, r2, #1
 	cmp r2, r3
 	bne cpy 
+
+    ldr r1, =bss_start
+    ldr r2, =bss_end
+    mov r3, #0
+
+clear_bss:
+    strb r3, [r1] 
+    add r1, r1, #1
+    cmp r1, r2
+    bne clean
+
 	bl main
 
 halt:
