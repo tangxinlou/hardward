@@ -60,9 +60,9 @@ _start:
 
     bl sdram_init
 
-	ldr r1, =data_load_addr  /* data段在bin文件中的地址, 加载地址 */
-	ldr r2, =data_start 	 /* data段在重定位地址, 运行时的地址 */
-	ldr r3, =data_end 	     /* data段结束地址 */
+	ldr r1, =0  /* data段在bin文件中的地址, 加载地址 */
+	ldr r2, =_start 	 /* data段在重定位地址, 运行时的地址 */
+	ldr r3, =__bss_start 	     /* data段结束地址 */
 
 cpy:
 	ldr r4, [r1]
@@ -72,8 +72,8 @@ cpy:
 	cmp r2, r3
 	ble cpy 
 
-    ldr r1, =bss_start
-    ldr r2, =bss_end
+    ldr r1, =__bss_start
+    ldr r2, =_end
     mov r3, #0
 
 clear_bss:
@@ -82,7 +82,8 @@ clear_bss:
     cmp r1, r2
     ble clean_bss
 
-	bl main
+	//bl main
+    ldr pc, =main
 
 halt:
 	b halt
