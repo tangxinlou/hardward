@@ -9,6 +9,7 @@
        data_end = . ;
 
    }
+   . = ALIGN(4)
    bss_start = .;
    .bss  : { *(.bss) *(.COMMON) }
    bss_end = .;

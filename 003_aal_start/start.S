@@ -65,22 +65,22 @@ _start:
 	ldr r3, =data_end 	     /* data段结束地址 */
 
 cpy:
-	ldrb r4, [r1]
-	strb r4, [r2]
-	add r1, r1, #1
-	add r2, r2, #1
+	ldr r4, [r1]
+	str r4, [r2]
+	add r1, r1, #4
+	add r2, r2, #4
 	cmp r2, r3
-	bne cpy 
+	ble cpy 
 
     ldr r1, =bss_start
     ldr r2, =bss_end
     mov r3, #0
 
 clear_bss:
-    strb r3, [r1] 
-    add r1, r1, #1
+    str r3, [r1] 
+    add r1, r1, #4
     cmp r1, r2
-    bne clean
+    ble clean_bss
 
 	bl main
 
