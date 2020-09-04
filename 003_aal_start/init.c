@@ -38,3 +38,42 @@ int sdram_test(void)
     }
     return 0;
 }
+
+void copy2sdram(volatile unsigned int *src, volatile unsigned int *dest, unsigned int led)
+{
+    unsigned int i = 0;
+
+    while(i < len)
+    {
+        *dest++ = *src;
+        i += 4;
+    }
+}
+
+void clean_bss(volatile unsigned int *start, volatile unsigned int *end )
+{
+    while(start < end)
+    {
+        *start++ = 0;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
