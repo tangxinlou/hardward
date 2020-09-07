@@ -6,24 +6,44 @@ _start:
     //ldr pc, =do_und //仅仅跳转指令是绝对地址，由于do_und 会保存在当前汇编文件最后，则do_und 可能会
     //保存在超过4k地方
     ldr pc, =und_addr
+    ldr pc, =swi_addr
+
 und_addr:
     .work do_und
 
+swi_addr:
+    .work do_swi
+
 do_und:
     ldr sp, = 0x34000000
-    stmdb sp!, {r0~r12, lr}
+    stmdb sp!, {r0-r12, lr}
 
     mrs r0, cpsr
     ldr r1, =und_string
     bl printException //bl 是相对跳转，如果是nand跳转,printException被重定位到了sdram 超过4k，则会出错
     //所以应该使用绝对地址
 
-    ldmia sp!, {r0~r12, lr}^
+    ldmia sp!, {r0-r12, lr}^
 
 und_string:
     .string "undefined instruction exception"
 
 .align 4 //4字节对齐
+
+do_swi:
+    ldr sp, 0x33e00000
+    stmdb sp! {r0-r12, lr}
+
+    mrs r0, cpsr
+    ldr r1, =swi_string
+    bl printException
+
+    ldmia sp!, {r0-r12, pc}^
+
+swi_string:
+    .string "swi exception"
+
+.align 4
 reset:
 
     /* 关闭看门狗 */
@@ -77,14 +97,18 @@ reset:
 	ldr sp, =0x40000000+4096 /* 先假设是nor启动 */
 	moveq sp, #4096  /* nand启动 */
 	streq r0, [r1]   /* 恢复原来的值 */
-	
 
     bl sdram_init
     bl copy2sdram
 
-    
-
     bl clean_bss
+    //cpu reset 后默认处于svc 模式
+    //现在先进入usr模式
+    mrs r0, cpsr
+    bic r0, r0, #0xf
+    msr cpsr, r0
+
+    ldr sp，=0x33f00000
     ldr pc, =sdram
 sdram:
     bl uart0_init
@@ -93,7 +117,7 @@ sdram:
 und_code:
     .word 0xdeadc0de
     bl print2
-
+    swi 0x123
 	//bl main
     ldr pc, =main
 
