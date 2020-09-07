@@ -1,7 +1,7 @@
 
 .text
 .global _start
-
+.code 32
 _start:
     
 
@@ -58,17 +58,21 @@ _start:
 	streq r0, [r1]   /* 恢复原来的值 */
 	
 
+    adr r0, thumb_func
+    add r0, r0, #1
+    bx r0
+
+.code 16
+thumb_func:
     bl sdram_init
-
-	
-
     bl copy2sdram
 
     
 
     bl clean_bss
 	//bl main
-    ldr pc, =main
+    ldr r0, =main
+    mov pc, r0
 
 halt:
 	b halt
