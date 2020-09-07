@@ -1,9 +1,24 @@
 
 .text
 .global _start
-.code 32
 _start:
-    
+    b reset
+    b do_und
+
+do_und:
+    ldr sp, = 0x34000000
+    stmdb sp!, {r0~r12, lr}
+
+    mrs r0, cpsr
+    ldr r1, =und_string
+    bl printException
+
+    ldmia sp!, {r0~r12, lr}
+
+und_string:
+    .string "undefined instruction exception"
+
+reset:
 
     /* 关闭看门狗 */
 	ldr r0, =0x53000000
@@ -58,21 +73,21 @@ _start:
 	streq r0, [r1]   /* 恢复原来的值 */
 	
 
-    adr r0, thumb_func
-    add r0, r0, #1
-    bx r0
-
-.code 16
-thumb_func:
     bl sdram_init
     bl copy2sdram
 
     
 
     bl clean_bss
+    bl uart0_init
+
+    bl print1
+und_code:
+    .word 0xdeadc0de
+    bl print2
+
 	//bl main
-    ldr r0, =main
-    mov pc, r0
+    ldr pc, =main
 
 halt:
 	b halt

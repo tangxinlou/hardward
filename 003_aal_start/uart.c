@@ -55,3 +55,14 @@ void printHex(unsigned int val)
             putchar(arr[i] - 0xA + 'A'); 
     }
 }
+
+void print1(void)
+{
+    puts("abc\n\r");
+}
+
+void print2(void)
+{
+    puts("123\n\r");
+}
+
