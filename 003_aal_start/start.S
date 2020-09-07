@@ -33,10 +33,14 @@ und_string:
 do_swi:
     ldr sp, 0x33e00000
     stmdb sp! {r0-r12, lr}
+    ldr r4, lr
 
     mrs r0, cpsr
     ldr r1, =swi_string
     bl printException
+
+    sub r0, r4, #4
+    bl printSWIVal
 
     ldmia sp!, {r0-r12, pc}^
 
