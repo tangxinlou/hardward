@@ -3,7 +3,11 @@
 .global _start
 _start:
     b reset
-    b do_und
+    //ldr pc, =do_und //仅仅跳转指令是绝对地址，由于do_und 会保存在当前汇编文件最后，则do_und 可能会
+    //保存在超过4k地方
+    ldr pc, =und_addr
+und_addr:
+    .work do_und
 
 do_und:
     ldr sp, = 0x34000000
@@ -11,13 +15,15 @@ do_und:
 
     mrs r0, cpsr
     ldr r1, =und_string
-    bl printException
+    bl printException //bl 是相对跳转，如果是nand跳转,printException被重定位到了sdram 超过4k，则会出错
+    //所以应该使用绝对地址
 
-    ldmia sp!, {r0~r12, lr}
+    ldmia sp!, {r0~r12, lr}^
 
 und_string:
     .string "undefined instruction exception"
 
+.align 4 //4字节对齐
 reset:
 
     /* 关闭看门狗 */
@@ -79,6 +85,8 @@ reset:
     
 
     bl clean_bss
+    ldr pc, =sdram
+sdram:
     bl uart0_init
 
     bl print1
