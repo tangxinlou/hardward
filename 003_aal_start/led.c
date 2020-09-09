@@ -5,6 +5,13 @@ void delay(volatile int d)
 	while (d--);
 }
 
+int led_init(void)
+{
+ 	GPFCON &= ~((3<<8) | (3<<10) | (3<<12));
+	GPFCON |=  ((1<<8) | (1<<10) | (1<<12));
+ 
+}
+
 int led_test(void)
 {
 	int val = 0;  /* val: 0b000, 0b111 */

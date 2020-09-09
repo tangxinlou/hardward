@@ -2,17 +2,24 @@
 .text
 .global _start
 _start:
-    b reset
-    //ldr pc, =do_und //仅仅跳转指令是绝对地址，由于do_und 会保存在当前汇编文件最后，则do_und 可能会
-    //保存在超过4k地方
-    ldr pc, =und_addr
-    ldr pc, =swi_addr
+	b reset          /* vector 0 : reset */
+	ldr pc, und_addr /* vector 4 : und */
+	ldr pc, swi_addr /* vector 8 : swi */
+	b halt			 /* vector 0x0c : prefetch aboot */
+	b halt			 /* vector 0x10 : data abort */
+	b halt			 /* vector 0x14 : reserved */
+	ldr pc, irq_addr /* vector 0x18 : irq */
+	b halt			 /* vector 0x1c : fiq */ 
 
 und_addr:
     .work do_und
 
 swi_addr:
     .work do_swi
+
+irq_addr:
+    .work do_irq
+
 
 do_und:
     ldr sp, = 0x34000000
@@ -48,6 +55,19 @@ swi_string:
     .string "swi exception"
 
 .align 4
+
+do_irq:
+    ldr sp, =0x33c00000
+
+    sub lr ,lr #4
+    stmdb sp!, {r0-r12, lr}
+
+    bl handle_irq_c
+
+    ldmia sp!,{r0-r12,lr}^
+
+.align 4
+
 reset:
 
     /* 关闭看门狗 */
@@ -110,6 +130,7 @@ reset:
     //现在先进入usr模式
     mrs r0, cpsr
     bic r0, r0, #0xf
+    bic r0, r0, #(1<<7)
     msr cpsr, r0
 
     ldr sp，=0x33f00000
