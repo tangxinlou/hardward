@@ -20,6 +20,7 @@ void timer_init(void)
 	/* 设置为自动加载并启动 */
 	TCON &= ~(1<<1);
 	TCON |= (1<<0) | (1<<3);  /* bit0: start, bit3: auto reload */ 
+	register_irq(10, timer_irq);
 }
 
 void timer_irq(void)

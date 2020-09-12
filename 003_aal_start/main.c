@@ -12,7 +12,7 @@ int g_B; //为初始化的全局变量保存在bss段中
 int main(void)
 {
     led_init();
-    interrupt_init();
+    //interrupt_init();
     key_eint_init();
     timer_init();
 

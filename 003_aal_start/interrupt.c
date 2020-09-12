@@ -1,5 +1,7 @@
 #include "s3c2440_soc.h"
 
+typedef void(*irq_func)(int);
+irq_func irq_array[32]; 
 
 void interrupt_init()
 {
@@ -8,25 +10,24 @@ void interrupt_init()
     INTMSK &= ~((1<<10);
 }
 
-
-void key_eint_init(void)
+ void handle_irq_c(void)
 {
-    GPFCON &= ~((3<<0) | (3<<4));
-	GPFCON |= ((2<<0) | (2<<4));   /* S2,S3被配置为中断引脚 */
+    int bit = INTOFFSET;
 
-	GPGCON &= ~((3<<6) | (3<<22));
-	GPGCON |= ((2<<6) | (2<<22));   /* S4,S5被配置为中断引脚 */ 
+    irq_array[bit](bit);
 
-
-    EXTINT0 |= (7<<0) | (7<<8);     /* S2,S3 */
-	EXTINT1 |= (7<<12);             /* S4 */
-	EXTINT2 |= (7<<12);             /* S5 */ 
-
-	EINTMASK &= ~((1<<11) | (1<<19));
-
+    SRCPND = (1<<bit); //通过往相应位写1清零
+	INTPND = (1<<bit);	 
 }
 
-void key_eint_irq(int irq)
+void register_irq(int irq, irq_func fp)
+{
+    irq_array[irq] = fp;
+
+    INTMSK &= ~(1<<irq);
+}
+
+ void key_eint_irq(int irq)
 {
     unsigned int val = EINTPEND;
 	unsigned int val1 = GPFDAT;
@@ -99,22 +100,28 @@ void key_eint_irq(int irq)
 
 
 }
-void handle_irq_c(void)
+
+void key_eint_init(void)
 {
-    int bit = INTOFFSET;
+    GPFCON &= ~((3<<0) | (3<<4));
+	GPFCON |= ((2<<0) | (2<<4));   /* S2,S3被配置为中断引脚 */
 
-    if(bit == 0 || bit == 2 || bit == 5)
-    {
-        key_eint_irq(bit);
-    }
-    if(bit == 10)
-    {
-        timer_irq();
-    }
+	GPGCON &= ~((3<<6) | (3<<22));
+	GPGCON |= ((2<<6) | (2<<22));   /* S4,S5被配置为中断引脚 */ 
 
-    SRCPND = (1<<bit); //通过往相应位写1清零
-	INTPND = (1<<bit);	 
+
+    EXTINT0 |= (7<<0) | (7<<8);     /* S2,S3 */
+	EXTINT1 |= (7<<12);             /* S4 */
+	EXTINT2 |= (7<<12);             /* S5 */ 
+
+	EINTMASK &= ~((1<<11) | (1<<19));
+
+ 	register_irq(0, key_eint_irq);
+	register_irq(2, key_eint_irq);
+	register_irq(5, key_eint_irq); 
 }
+
+
 
 
 
