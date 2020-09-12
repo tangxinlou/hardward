@@ -5,6 +5,7 @@ void interrupt_init()
 {
     //使能 eint 0 eint 2 eint8_23
     INTMSK &= ~((1<<0) | (1<<2) | (1<<5));
+    INTMSK &= ~((1<<10);
 }
 
 
@@ -105,6 +106,10 @@ void handle_irq_c(void)
     if(bit == 0 || bit == 2 || bit == 5)
     {
         key_eint_irq(bit);
+    }
+    if(bit == 10)
+    {
+        timer_irq();
     }
 
     SRCPND = (1<<bit); //通过往相应位写1清零
