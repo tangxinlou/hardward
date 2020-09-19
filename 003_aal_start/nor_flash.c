@@ -31,12 +31,18 @@ unsigned int nor_dat(unsigned int offset)
 void do_scan_nor_flash(void)
 {
     char str[4];
+    unsigned int size;
     nor_cmd(0x55,0x98);
     str[0] = nor_dat(0x10);
     str[1] = nor_dat(0x11);
     str[2] = nor_dat(0x12);
     str[3] = '\0'
     printf("str = %s\n\r", str);
+
+    size = nor_dat(0x27);
+    printf("nor size = 0x%x, %dm\n\r", size, size/(1024*1024));
+
+    nor_cmd(0,0xf0);
 
 }
  void nor_flash_test(void)
