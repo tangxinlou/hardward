@@ -19,16 +19,8 @@ int main(void)
     puts("\n\rg_A = ");
     printHex(g_A);
     puts("\n\r");
-    while (1)
-    {    
-        putchar(g_Char);
-        g_Char++; 
-
-        putchar(g_Char3);
-        g_Char++;
-        delay(10000000);
-    }
     
+   nor_flash_test(); 
 
     return 0;
 }

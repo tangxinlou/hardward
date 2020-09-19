@@ -1,4 +1,4 @@
-all: start.o led.o uart.o init.o main.o exception.o interrupt.o timer.o my_printf.o
+all: start.o led.o uart.o init.o main.o exception.o interrupt.o timer.o nor_flash.o my_printf.o
     #   arm-linux-ld -Ttext 0  -Tdata 0x30000000 start.o led.o uart.o init.o main.o -o sdram.elf 把data 放到sdram中
     #   但是使用这个30000000会让bin文件特别大
 	arm-linux-ld -T sdram.lds $^  -o sdram.elf
