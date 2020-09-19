@@ -32,6 +32,10 @@ void do_scan_nor_flash(void)
 {
     char str[4];
     unsigned int size;
+    int regions ,i;
+    int region_info_base;
+    int block_addr,blocks,block_size, j;
+    int cnt;
     nor_cmd(0x55,0x98);
     str[0] = nor_dat(0x10);
     str[1] = nor_dat(0x11);
@@ -41,6 +45,32 @@ void do_scan_nor_flash(void)
 
     size = nor_dat(0x27);
     printf("nor size = 0x%x, %dm\n\r", size, size/(1024*1024));
+
+    regions = nor_dat(0x2c);
+    regions_info_base = 0x2d;
+
+    block_addr = 0;
+
+    for (i=0 ,i <= regions,i ++)
+    {
+        //从2d读出2个字节数据，取低八位，一个字节数据
+        blocks = 1 + nor_dat(regions_info_base)  + (nor_dat(regions_info_base + 1)<<8);
+        blocks_size = 256 * nor_dat(regions_info_base + 2) + (nor_dat(region_info_base +3)<< 8);
+        regions_info_base += 4;
+
+        for (j = 0 , j <= blocks_size, j++)
+        {
+            printHex(block_add);
+            putchar(' ');
+            cnt++;
+            block_add += blocks_size;
+            if(cnt % 5 ==0)
+            {
+                printf("\n\r");
+            }
+        }
+    }
+    printf("\n\r");
 
     nor_cmd(0,0xf0);
 
