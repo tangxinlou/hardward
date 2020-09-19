@@ -28,6 +28,22 @@ unsigned int nor_dat(unsigned int offset)
     return nor_read_word(NOR_FLASH_BASE,offset);
 }
 
+
+ void wait_ready(unsigned int addr)
+{
+	unsigned int val;
+	unsigned int pre;
+
+	pre = nor_dat(addr>>1);
+	val = nor_dat(addr>>1);
+	while ((val & (1<<6)) != (pre & (1<<6)))
+	{
+		pre = val;
+		val = nor_dat(addr>>1);		
+	}
+}
+
+
 void do_scan_nor_flash(void)
 {
     char str[4];
@@ -123,6 +139,73 @@ void do_read_nor_flash()
         printf("\n\r");
     }
 }
+
+void do_write_nor_flash(void) 
+{
+    unsigned int addr;
+    
+    printf("enter the address of sector to erase:");
+
+    addr = get_uint();
+
+    printf("erasing ...");
+
+    nor_cmd(0x555,0xaa);
+    nor_cmd(0x2aa,0x55);
+    nor_cmd(0x555,0x80);
+
+    nor_cmd(0x555,0xaa);
+    nor_cmd(0x2aa,0x55); 
+    nor_cmd(addr>>1,0x30);
+
+    wait_ready(addr);
+}
+
+void do_write_nor_flash(void)
+{
+    unsigned int addr;
+    unsigned char str[100];
+    printf("Enter the address of sector to write: ");
+	addr = get_uint();
+ 
+    printf("Enter the string to write: ");
+	gets(str);
+
+	printf("writing ...\n\r");
+
+    while (str[i] && str[j])
+	{
+		val = str[i] + (str[j]<<8);
+		
+		/* 烧写 */
+		nor_cmd(0x555, 0xaa);	 /* 解锁 */
+		nor_cmd(0x2aa, 0x55); 
+		nor_cmd(0x555, 0xa0);	 /* program */
+		nor_cmd(addr>>1, val);
+		/* 等待烧写完成 : 读数据, Q6无变化时表示结束 */
+		wait_ready(addr);
+
+		i += 2;
+		j += 2;
+		addr += 2;
+	}
+
+	val = str[i];
+	/* 烧写 */
+	nor_cmd(0x555, 0xaa);	 /* 解锁 */
+	nor_cmd(0x2aa, 0x55); 
+	nor_cmd(0x555, 0xa0);	 /* program */
+	nor_cmd(addr>>1, val);
+	/* 等待烧写完成 : 读数据, Q6无变化时表示结束 */
+	wait_ready(addr); 
+
+
+
+
+ 
+}
+
+
  void nor_flash_test(void)
 {
 	char c;
