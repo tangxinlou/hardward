@@ -14,7 +14,7 @@ int main(void)
     led_init();
     //interrupt_init();
     key_eint_init();
-    timer_init();
+    //timer_init();
 
     puts("\n\rg_A = ");
     printHex(g_A);

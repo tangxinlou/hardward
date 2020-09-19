@@ -36,6 +36,18 @@ void do_scan_nor_flash(void)
     int region_info_base;
     int block_addr,blocks,block_size, j;
     int cnt;
+
+ 	int vendor, device;
+	
+	/* 打印厂家ID、设备ID */
+	nor_cmd(0x555, 0xaa);    /* 解锁 */
+	nor_cmd(0x2aa, 0x55); 
+	nor_cmd(0x555, 0x90);    /* read id */
+	vendor = nor_dat(0);
+	device = nor_dat(1);
+	nor_cmd(0, 0xf0);        /* reset */ 
+
+
     nor_cmd(0x55,0x98);
     str[0] = nor_dat(0x10);
     str[1] = nor_dat(0x11);
@@ -74,6 +86,42 @@ void do_scan_nor_flash(void)
 
     nor_cmd(0,0xf0);
 
+}
+
+
+void do_read_nor_flash()
+{
+    unsigned int addr;
+    volatile unsigned char * p;
+    unsigned char c;
+    int i,j;
+    unsigned char str[16];
+
+    printf("enter the address to read");
+
+    addr = get_int();
+    
+    p = (volatile unsigned char *)addr;
+
+    for (i = 0 , i < 4, i++)
+    {
+        for (j = 0, i < 16, j++)
+        {
+            c = *p++;
+            str[j] = c;
+            printf("%02x", c);
+        }
+
+        for (j = 0 ,i < 16, j++)
+        {
+            if (str[j] < 0x20 | str[j] > 0x7e)
+                putchar('.');
+            else
+                putchar(str[j]);
+        }
+
+        printf("\n\r");
+    }
 }
  void nor_flash_test(void)
 {

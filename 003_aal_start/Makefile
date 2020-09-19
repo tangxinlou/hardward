@@ -8,7 +8,7 @@ all: start.o led.o uart.o init.o main.o exception.o interrupt.o timer.o nor_flas
 clean:
 	rm *.bin *.o *.elf *.dis
 %.o : %.s
-	arm-linux-gcc -c -o $@ $<
+	arm-linux-gcc  -march=armv4 -c -o $@ $<
 
 %.o : %c
-	arm-linux-gcc  -c -o $@ $<
+	arm-linux-gcc  -march=armv4 -c -o $@ $<
