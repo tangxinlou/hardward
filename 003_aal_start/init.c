@@ -39,18 +39,47 @@ int sdram_test(void)
     return 0;
 }
 
+ int isBootFromNorFlash(void)
+{
+	volatile unsigned int *p = (volatile unsigned int *)0;
+	unsigned int val = *p;
+
+	*p = 0x12345678;
+	if (*p == 0x12345678)
+	{
+		/* 写成功, 对应nand启动 */
+		*p = val;
+		return 0;
+	}
+	else
+	{
+		return 1;
+	}
+}
+
 void copy2sdram(void)
 {
     extern int __code_start, __bss_start;
     volatile unsigned int *dest = (volatile unsigned int *) &__code_start;
     volatile unsigned int *end = (volatile unsigned int *) &__bss_start;
     volatile unsigned int *src = 0;
-
-    while(src)
+    len = ((int)&__bss_start) - ((int)&__code_start); 
+    if( isBootFromNorFlash())
     {
-        *dest++ = *src;
+        while(src)
+        {
+            *dest++ = *src;
+        }
     }
+    else
+	{
+		nand_init();
+		nand_read(src, dest, len);
+	}
+    
 }
+
+
 
 void clean_bss()
 {            
